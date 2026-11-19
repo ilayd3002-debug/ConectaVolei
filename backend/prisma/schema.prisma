@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           Int       @id @default(autoincrement())
+  nome         String
+  email        String    @unique
+  senha        String
+  reset_token  String?
+  reset_expira DateTime?
+  criado_em    DateTime  @default(now())
+
+  campeonatos Campeonato[]
+
+  @@map("usuarios")
+}
+
+model Time {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  cidade    String
+  categoria String   @default("Masculino")
+  tecnico   String?
+  email     String?
+  telefone  String?
+  criado_em DateTime @default(now())
+
+  @@map("times")
+}
+
+model Jogador {
+  id              Int      @id @default(autoincrement())
+  nome            String
+  email           String?  @unique
+  telefone        String?
+  data_nascimento String?
+  posicao         String?
+  numero_camisa   Int?
+  altura          Float?
+  time            String?
+  status          String   @default("Ativo")
+  criado_em       DateTime @default(now())
+
+  @@map("jogadores")
+}
+
+model Campeonato {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  data_inicio String
+  data_fim    String
+  formato     String
+  max_equipes Int
+  status      String   @default("planejado")
+  regulamento String?
+  publico     Boolean  @default(true)
+  criador_id  Int?
+  criado_em   DateTime @default(now())
+
+  criador  Usuario?  @relation(fields: [criador_id], references: [id], onDelete: SetNull)
+  partidas Partida[]
+
+  @@map("campeonatos")
+}
+
+model Partida {
+  id            Int      @id @default(autoincrement())
+  time_a        String
+  time_b        String
+  data          String
+  horario       String
+  local         String
+  tipo          String?
+  categoria     String?
+  modalidade    String?
+  campeonato_id Int?
+  criado_em     DateTime @default(now())
+
+  campeonato Campeonato?      @relation(fields: [campeonato_id], references: [id], onDelete: SetNull)
+  checklist  ChecklistItem[]
+
+  @@map("partidas")
+}
+
+model ChecklistItem {
+  id         Int     @id @default(autoincrement())
+  partida_id Int
+  descricao  String
+  concluido  Boolean @default(false)
+
+  partida Partida @relation(fields: [partida_id], references: [id], onDelete: Cascade)
+
+  @@map("checklist_itens")
+}

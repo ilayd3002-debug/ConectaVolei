@@ -1,0 +1,777 @@
+<template>
+  <div class="app-shell">
+
+    <main class="page">
+      <!-- Marca decorativa no canto -->
+      <svg
+        class="logo-bg"
+        width="480"
+        height="480"
+        viewBox="0 0 24 24"
+        fill="none"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          stroke="#f0b429"
+          stroke-width="0.5"
+        />
+
+        <path
+          d="M12 3c2.5 2.5 2.5 15.5 0 18M4.5 8c3 1.8 12 1.8 15 0M4.5 16c3-1.8 12-1.8 15 0"
+          stroke="#f0b429"
+          stroke-width="0.4"
+          fill="none"
+        />
+      </svg>
+
+      <div class="circle-bg"></div>
+
+      <div class="content-wrapper">
+        <div class="card">
+          <!-- SETA VOLTAR (canto superior esquerdo do card) -->
+          <button
+            class="btn-voltar"
+            type="button"
+            title="Voltar"
+            @click="voltar"
+          >
+            <Icon
+              icon="carbon:chevron-left"
+              width="24"
+              height="24"
+            />
+          </button>
+
+          <!-- CABEÇALHO -->
+          <div class="header">
+            <div class="logo-circle">
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                  stroke="#ffffff"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+
+                <circle
+                  cx="9"
+                  cy="7"
+                  r="4"
+                  stroke="#ffffff"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+
+                <path
+                  d="M23 21v-2a4 4 0 0 0-3-3.87"
+                  stroke="#ffffff"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+
+                <path
+                  d="M16 3.13a4 4 0 0 1 0 7.75"
+                  stroke="#ffffff"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+
+            <h1>Cadastro de Time</h1>
+
+            <p class="subtitle">
+              Preencha os dados da equipe
+            </p>
+          </div>
+
+          <!-- MENSAGEM DE SUCESSO -->
+          <div
+            v-if="enviado"
+            class="sucesso"
+          >
+            <div class="check-circle">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="#1f9d55"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+
+            <p class="sucesso-titulo">
+              Time cadastrado com sucesso!
+            </p>
+
+            <p class="sucesso-texto">
+              {{ form.nome }} já pode participar das competições.
+            </p>
+
+            <button
+              class="btn-secundario"
+              type="button"
+              @click="resetar"
+            >
+              Cadastrar outro time
+            </button>
+          </div>
+
+          <!-- FORMULÁRIO -->
+          <form
+            v-else
+            @submit.prevent="handleSubmit"
+          >
+            <div class="field">
+              <label for="nome">
+                Nome do time
+              </label>
+
+              <input
+                id="nome"
+                type="text"
+                v-model="form.nome"
+                placeholder="Ex: Águias Vôlei Clube"
+              />
+            </div>
+
+            <div class="field">
+              <label for="cidade">
+                Cidade
+              </label>
+
+              <input
+                id="cidade"
+                type="text"
+                v-model="form.cidade"
+                placeholder="Ex: São Paulo"
+              />
+            </div>
+
+            <div class="field">
+              <label for="categoria">
+                Categoria
+              </label>
+
+              <select
+                id="categoria"
+                v-model="form.categoria"
+              >
+                <option value="Masculino">
+                  Masculino
+                </option>
+
+                <option value="Feminino">
+                  Feminino
+                </option>
+
+                <option value="Misto">
+                  Misto
+                </option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="tecnico">
+                Técnico responsável
+              </label>
+
+              <input
+                id="tecnico"
+                type="text"
+                v-model="form.tecnico"
+                placeholder="Nome completo"
+              />
+            </div>
+
+            <div class="linha-dupla">
+              <div class="field flex1">
+                <label for="email">
+                  E-mail de contato
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  v-model="form.email"
+                  placeholder="time@exemplo.com"
+                />
+              </div>
+
+              <div class="field flex1">
+                <label for="telefone">
+                  Telefone
+                </label>
+
+                <input
+                  id="telefone"
+                  type="tel"
+                  v-model="form.telefone"
+                  placeholder="(00) 00000-0000"
+                />
+              </div>
+            </div>
+
+            <!-- ERRO -->
+            <p
+              v-if="erro"
+              class="erro"
+            >
+              {{ erro }}
+            </p>
+
+            <!-- BOTÃO CADASTRAR -->
+            <button
+              type="submit"
+              class="btn-principal"
+              :disabled="carregando"
+            >
+              {{
+                carregando
+                  ? "Cadastrando..."
+                  : "Cadastrar time"
+              }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script>
+import Sidebar from "../components/Sidebar.vue";
+import api from "../services/api";
+import { Icon } from "@iconify/vue";
+
+export default {
+  name: "CadastroTimes",
+
+  components: {
+    Sidebar,
+    Icon,
+  },
+
+  data() {
+    return {
+      form: {
+        nome: "",
+        cidade: "",
+        categoria: "Masculino",
+        tecnico: "",
+        email: "",
+        telefone: "",
+      },
+
+      enviado: false,
+      erro: "",
+      carregando: false,
+    };
+  },
+
+  methods: {
+    voltar() {
+      window.history.back();
+    },
+
+    async handleSubmit() {
+      if (
+        !this.form.nome.trim() ||
+        !this.form.cidade.trim() ||
+        !this.form.tecnico.trim()
+      ) {
+        this.erro =
+          "Preencha nome do time, cidade e técnico responsável.";
+
+        return;
+      }
+
+      this.erro = "";
+      this.carregando = true;
+
+      try {
+        await api.post("/times", this.form);
+
+        this.enviado = true;
+      } catch (e) {
+        console.error(
+          "Erro ao cadastrar time:",
+          e
+        );
+
+        this.erro =
+          e.response?.data?.mensagem ||
+          "Não foi possível cadastrar o time.";
+      } finally {
+        this.carregando = false;
+      }
+    },
+
+    resetar() {
+      this.form = {
+        nome: "",
+        cidade: "",
+        categoria: "Masculino",
+        tecnico: "",
+        email: "",
+        telefone: "",
+      };
+
+      this.erro = "";
+      this.enviado = false;
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* =================================
+   ESTRUTURA PRINCIPAL
+================================= */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  width: 100%;
+}
+
+.page {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+
+  background: linear-gradient(
+    135deg,
+    #0b1f4d 0%,
+    #122f6b 55%,
+    #163a82 100%
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  overflow: auto;
+
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  padding: 40px 20px;
+
+  box-sizing: border-box;
+}
+
+/* =================================
+   DECORAÇÕES
+================================= */
+
+.logo-bg {
+  position: absolute;
+
+  bottom: -140px;
+  right: -120px;
+
+  opacity: 0.9;
+
+  pointer-events: none;
+}
+
+.circle-bg {
+  position: absolute;
+
+  top: -180px;
+  left: -200px;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.05);
+
+  pointer-events: none;
+}
+
+/* =================================
+   WRAPPER (botão + card)
+================================= */
+
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 520px;
+}
+
+/* =================================
+   SETA VOLTAR (canto superior esquerdo do card)
+================================= */
+
+.btn-voltar {
+  position: absolute;
+
+  top: 20px;
+  left: 20px;
+
+  z-index: 2;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1.5px solid #e2e5ec;
+
+  border-radius: 50%;
+
+  background: #fafbfc;
+
+  color: #0b1f4d;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+
+.btn-voltar:hover {
+  background: #eef1f6;
+  border-color: #0b1f4d;
+
+  transform: translateX(-3px);
+}
+
+/* =================================
+   CARD
+================================= */
+
+.card {
+  position: relative;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  width: 100%;
+
+  padding: 44px 48px 40px;
+
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.35);
+
+  box-sizing: border-box;
+}
+
+/* =================================
+   CABEÇALHO
+================================= */
+
+.header {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  margin-bottom: 8px;
+}
+
+.logo-circle {
+  width: 84px;
+  height: 84px;
+
+  border-radius: 50%;
+
+  background: #0b1f4d;
+
+  border: 3px solid #f0b429;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+}
+
+h1 {
+  color: #0b1f4d;
+
+  font-size: 28px;
+  font-weight: 800;
+
+  margin: 0;
+
+  text-align: center;
+}
+
+.subtitle {
+  color: #6b7280;
+
+  font-size: 15px;
+
+  margin-top: 6px;
+  margin-bottom: 0;
+
+  text-align: center;
+}
+
+/* =================================
+   CAMPOS
+================================= */
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+
+  color: #0b1f4d;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  font-size: 15px;
+
+  border: 1.5px solid #e2e5ec;
+
+  border-radius: 10px;
+
+  outline: none;
+
+  color: #1f2937;
+
+  background: #fafbfc;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #0b1f4d;
+
+  box-shadow:
+    0 0 0 3px rgba(11, 31, 77, 0.08);
+}
+
+.field select {
+  cursor: pointer;
+}
+
+/* =================================
+   LINHA DUPLA
+================================= */
+
+.linha-dupla {
+  display: flex;
+
+  gap: 12px;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+/* =================================
+   ERRO
+================================= */
+
+.erro {
+  color: #d93025;
+
+  font-size: 13.5px;
+
+  margin-top: 4px;
+
+  margin-bottom: 4px;
+}
+
+/* =================================
+   BOTÃO PRINCIPAL
+================================= */
+
+.btn-principal {
+  width: 100%;
+
+  background: #0b1f4d;
+
+  color: #fff;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 14px;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin-top: 16px;
+
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+.btn-principal:hover {
+  background: #122f6b;
+
+  transform: translateY(-1px);
+}
+
+.btn-principal:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* =================================
+   SUCESSO
+================================= */
+
+.sucesso {
+  text-align: center;
+
+  padding: 24px 0;
+}
+
+.check-circle {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 50%;
+
+  background: #e8f7ee;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 16px;
+}
+
+.sucesso-titulo {
+  color: #0b1f4d;
+
+  font-weight: 600;
+
+  font-size: 17px;
+
+  margin-bottom: 4px;
+}
+
+.sucesso-texto {
+  color: #6b7280;
+
+  font-size: 14px;
+
+  margin-bottom: 24px;
+}
+
+.btn-secundario {
+  background: #0b1f4d;
+
+  color: #fff;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 24px;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.2s;
+}
+
+.btn-secundario:hover {
+  background: #122f6b;
+}
+
+/* =================================
+   RESPONSIVIDADE
+================================= */
+
+@media (max-width: 900px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .page {
+    min-height: calc(100vh - 70px);
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 25px 15px;
+  }
+
+  .card {
+    padding: 32px 24px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .linha-dupla {
+    flex-direction: column;
+
+    gap: 0;
+  }
+}
+</style>
